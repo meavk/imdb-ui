@@ -4,14 +4,14 @@ namespace Imdb.Blazor.Data;
 
 public class ImdbService
 {
-    private HttpClient? imdbServiceClient;
+    private readonly HttpClient? imdbServiceClient;
 
-    public ImdbService()
+    public ImdbService(IHttpContextAccessor httpContextAccessor)
     {
-        this.imdbServiceClient = new HttpClient();
-
-        // TODO: Get this dynamically.
-        this.imdbServiceClient.BaseAddress = new Uri("http://localhost:8080");
+        this.imdbServiceClient = new HttpClient(); 
+        var urlString = Environment.GetEnvironmentVariable("IMDB_SERVICE_URL")
+            ?? $"{httpContextAccessor?.HttpContext?.Request.Scheme}://{httpContextAccessor?.HttpContext?.Request.Host.Value}";
+        this.imdbServiceClient.BaseAddress = new Uri(urlString);
     }
 
     public async Task<Movie[]> GetMovieAsync()
