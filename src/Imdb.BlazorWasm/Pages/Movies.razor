@@ -1,0 +1,62 @@
+﻿@page "/movies"
+@inject HttpClient Http
+
+<PageTitle>Movies</PageTitle>
+
+<h1>Movies</h1>
+
+@if (movies == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movie in movies)
+            {
+                <tr>
+                    <td>@movie.MovieId</td>
+                    <td>@movie.Title</td>
+                    <td>@movie.Year</td>
+                    <td>@movie.Rating</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Movie[]? movies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            movies = await Http.GetFromJsonAsync<Movie[]>("api/movies");
+        }
+        catch (System.Exception)
+        {
+            movies = await Http.GetFromJsonAsync<Movie[]>("sample-data/movies.json");
+        }
+    }
+
+    public class Movie
+    {
+        public string? MovieId { get; set; }
+
+        public string? Title { get; set; }
+
+        public int Year { get; set; }
+
+        public float Rating { get; set; }
+    }
+}
